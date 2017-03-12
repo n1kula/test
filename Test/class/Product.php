@@ -1,6 +1,6 @@
 <?php
 
-class Product
+class Product implements Item, JsonSerializable
 {
     /**
      * @var int
@@ -159,10 +159,44 @@ class Product
         return $ret;
     }
 
-	    public function getNet()
+    /**
+     * @return array
+     */
+    public function __toArray()
+    {
+        $ret = [];
+        $reflect = new ReflectionClass($this);
+        $props = $reflect->getProperties(ReflectionProperty::IS_PROTECTED);
+
+        foreach ($props as $prop) {
+            $propName = $prop->getName();
+            if ($propName === 'amount') {
+                continue;
+            }
+            $ret[$propName] = $this->$propName;
+        }
+
+        return $ret;
+    }
+
+    /**
+     * @return float
+     */
+    public function getNet()
     {
         return round($this->price / 1.23, 2);
-    
+    }
 
+    /**
+     * Specify data which should be serialized to JSON
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    public function jsonSerialize()
+    {
+        return $this->__toArray();
+    }
 }
 
