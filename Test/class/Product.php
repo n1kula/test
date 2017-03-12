@@ -159,5 +159,10 @@ class Product
         return $ret;
     }
 
+	    public function getNet()
+    {
+        return round($this->price / 1.23, 2);
+    
+
 }
 
